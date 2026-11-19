@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hệ Thống Lấy Key Free</title>
+  <style>
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 16px;
+    }
+    .card {
+      width: 100%;
+      max-width: 440px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 14px;
+      padding: 28px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      text-align: center;
+    }
+    h1 { margin: 0 0 8px; font-size: 22px; color: #38bdf8; }
+    p.desc { margin: 0 0 22px; font-size: 14px; color: #94a3b8; line-height: 1.5; }
+    .btn {
+      width: 100%;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-primary { background: #0284c7; color: #fff; }
+    .btn-primary:hover:not(:disabled) { background: #0369a1; }
+    .btn-primary:disabled { background: #475569; cursor: not-allowed; opacity: 0.7; }
+    .key-box {
+      margin-top: 20px;
+      padding: 14px;
+      background: #0f172a;
+      border: 1px dashed #38bdf8;
+      border-radius: 8px;
+      display: none;
+    }
+    .key-text {
+      font-family: monospace;
+      font-size: 16px;
+      font-weight: bold;
+      color: #4ade80;
+      word-break: break-all;
+      margin-bottom: 10px;
+    }
+    .meta { font-size: 12px; color: #94a3b8; margin-bottom: 12px; }
+    .btn-copy { background: #16a34a; color: #fff; padding: 8px 12px; font-size: 13px; }
+    .btn-copy:hover { background: #15803d; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Cổng Nhận Key Free</h1>
+    <p class="desc">Nhấn nút bên dưới và chờ 5 giây để hệ thống khởi tạo mã kích hoạt 4 giờ cho phiên làm việc của bạn.</p>
+
+    <button id="getKeyBtn" class="btn btn-primary" onclick="startGenerate()">Lấy Key Ngay</button>
+
+    <div id="keyBox" class="key-box">
+      <div id="keyDisplay" class="key-text"></div>
+      <div id="expireInfo" class="meta"></div>
+      <button class="btn btn-copy" onclick="copyKey()">Sao chép Key</button>
+    </div>
+  </div>
+
+  <script>
+    function randomPart(len) {
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      let res = "";
+      for (let i = 0; i < len; i++) {
+        res += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return res;
+    }
+
+    function startGenerate() {
+      const btn = document.getElementById("getKeyBtn");
+      let seconds = 5;
+      btn.disabled = true;
+      btn.innerText = `Đang tạo key... (${seconds}s)`;
+
+      const timer = setInterval(() => {
+        seconds--;
+        if (seconds > 0) {
+          btn.innerText = `Đang tạo key... (${seconds}s)`;
+        } else {
+          clearInterval(timer);
+          showKey();
+          btn.disabled = false;
+          btn.innerText = "Tạo Key Mới";
+        }
+      }, 1000);
+    }
+
+    function showKey() {
+      // Nếu nối với backend Node.js ở bước trước, thay đoạn này bằng fetch('/api/keys/generate', ...)
+      const generatedKey = `FREE-${randomPart(4)}-${randomPart(4)}-${randomPart(4)}`;
+      const expireTime = new Date(Date.now() + 4 * 60 * 60 * 1000);
+
+      document.getElementById("keyDisplay").innerText = generatedKey;
+      document.getElementById("expireInfo").innerText =
+        "Hết hạn lúc: " + expireTime.toLocaleString("vi-VN");
+      document.getElementById("keyBox").style.display = "block";
+    }
+
+    function copyKey() {
+      const key = document.getElementById("keyDisplay").innerText;
+      navigator.clipboard.writeText(key).then(() => {
+        alert("Đã sao chép key: " + key);
+      });
+    }
+  </script>
+</body>
+</html>
