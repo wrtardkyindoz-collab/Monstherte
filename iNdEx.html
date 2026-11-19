@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mhert • Get Key Portal</title>
+  <style>
+    :root {
+      --bg: #040705;
+      --panel: rgba(11, 20, 15, 0.92);
+      --line: rgba(74, 222, 128, 0.25);
+      --neon: #4ade80;
+      --lime: #a3e635;
+      --cyan: #2dd4bf;
+      --amber: #fbbf24;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background:
+        radial-gradient(circle at 15% 15%, rgba(74, 222, 128, 0.16), transparent 45%),
+        radial-gradient(circle at 85% 85%, rgba(45, 212, 191, 0.14), transparent 45%),
+        var(--bg);
+      color: var(--text);
+    }
+
+    .card {
+      width: 100%;
+      max-width: 470px;
+      background: var(--panel);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 24px 20px;
+      box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.78),
+        0 0 35px rgba(74, 222, 128, 0.1);
+    }
+
+    .top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .brand-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      color: var(--neon);
+      background: rgba(74, 222, 128, 0.12);
+      border: 1px solid rgba(74, 222, 128, 0.35);
+    }
+
+    .led {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--neon);
+      box-shadow: 0 0 10px var(--neon);
+    }
+
+    .cycle-pill {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--lime);
+      background: rgba(163, 230, 53, 0.1);
+      border: 1px solid rgba(163, 230, 53, 0.25);
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 25px;
+      font-weight: 800;
+      background: linear-gradient(90deg, #ffffff, var(--neon), var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .sub {
+      margin: 0 0 16px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .ad-box {
+      background: rgba(3, 8, 5, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 16px;
+      padding: 13px;
+      margin-bottom: 14px;
+    }
+
+    .ad-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .ad-tag {
+      color: var(--amber);
+      background: rgba(251, 191, 36, 0.12);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    .ad-state {
+      color: #fca5a5;
+    }
+
+    .ad-state.ok {
+      color: var(--neon);
+    }
+
+    .ad-showcase {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 12px;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(6, 24, 16, 0.9));
+      border: 1px solid rgba(74, 222, 128, 0.25);
+      border-radius: 12px;
+      padding: 10px;
+    }
+
+    .ad-visual {
+      width: 92px;
+      height: 74px;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #070d19;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .ad-category {
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--cyan);
+      margin-bottom: 3px;
+    }
+
+    .ad-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 3px;
+    }
+
+    .ad-copy {
+      font-size: 11.5px;
+      line-height: 1.38;
+      color: var(--muted);
+    }
+
+    .progress-wrap {
+      margin-top: 11px;
+      height: 7px;
+      width: 100%;
+      background: rgba(148, 163, 184, 0.15);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--neon), var(--cyan));
+      transition: width 0.15s linear;
+    }
+
+    .progress-row {
+      margin-top: 7px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11.5px;
+      color: var(--muted);
+    }
+
+    .btn {
+      width: 100%;
+      border: none;
+      border-radius: 13px;
+      padding: 13px 15px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.14s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    }
+
+    .btn:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+
+    .btn-ad {
+      background: rgba(74, 222, 128, 0.14);
+      border: 1px solid rgba(74, 222, 128, 0.45);
+      color: var(--neon);
+      margin-bottom: 9px;
+    }
+
+    .btn-ad:hover:not(:disabled) {
+      background: rgba(74, 222, 128, 0.24);
+    }
+
+    .btn-get {
+      background: linear-gradient(135deg, #16a34a, #0d9488);
+      color: #ffffff;
+      box-shadow: 0 10px 24px rgba(22, 163, 74, 0.32);
+    }
+
+    .btn-get:disabled {
+      background: #1c2520;
+      color: #64746b;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    .key-card {
+      margin-top: 16px;
+      padding: 15px;
+      border-radius: 15px;
+      background: rgba(2, 8, 4, 0.94);
+      border: 1px solid rgba(74, 222, 128, 0.45);
+      display: none;
+    }
+
+    .key-code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 15.5px;
+      font-weight: 800;
+      color: var(--neon);
+      background: rgba(74, 222, 128, 0.09);
+      border: 1px solid rgba(74, 222, 128, 0.28);
+      border-radius: 11px;
+      padding: 10px;
+      text-align: center;
+      word-break: break-all;
+      letter-spacing: 0.5px;
+    }
+
+    .key-sub {
+      margin: 8px 0 11px;
+      font-size: 11.5px;
+      line-height: 1.45;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .btn-copy {
+      background: rgba(45, 212, 191, 0.16);
+      border: 1px solid rgba(45, 212, 191, 0.45);
+      color: #99f6e4;
+      padding: 10px;
+      font-size: 13.5px;
+    }
+
+    .history-box {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(148, 163, 184, 0.14);
+      font-size: 11.5px;
+      color: var(--muted);
+    }
+
+    .history-top {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      font-weight: 700;
+      color: #cbd5e1;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 6px 9px;
+      border-radius: 8px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 11px;
+    }
+
+    .status-active {
+      color: var(--neon);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-weight: 700;
+    }
+
+    .status-expired {
+      color: #f87171;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="top-row">
+      <div class="brand-pill"><span class="led"></span> MHERT GET KEY</div>
+      <span class="cycle-pill">Chu kỳ 12h • Không trùng</span>
+    </div>
+
+    <h1>Mhert Portal</h1>
+    <p class="sub">Xem quảng cáo tài trợ để mở khóa key <strong>Mhert-&lt;mã key&gt;</strong>. Mỗi key hiệu lực 12 giờ và tự động đổi mã mới không trùng khi hết hạn.</p>
+
+    <div class="ad-box">
+      <div class="ad-meta">
+        <span class="ad-tag">Sponsored Ad</span>
+        <span id="adStateText" class="ad-state">Chưa hoàn tất</span>
+      </div>
+
+      <div class="ad-showcase">
+        <div id="adVisual" class="ad-visual"></div>
+        <div>
+          <div id="adCategory" class="ad-category">Quảng cáo Xe</div>
+          <div id="adTitle" class="ad-title">APEX GT-R Turbo Edition</div>
+          <div id="adCopy" class="ad-copy">Động cơ tăng áp kép, ống xả thể thao &amp; gói độ đường phố cực cháy.</div>
+        </div>
+      </div>
+
+      <div class="progress-wrap">
+        <div id="adBar" class="progress-fill"></div>
+      </div>
+      <div class="progress-row">
+        <span id="adStatus">Bấm xem quảng cáo để bắt đầu (7s)</span>
+        <span id="adPct">0%</span>
+      </div>
+    </div>
+
+    <button id="watchAdBtn" class="btn btn-ad" onclick="startAd()">1. Xem Quảng Cáo (7s)</button>
+    <button id="getKeyBtn" class="btn btn-get" onclick="generateUniqueKey()" disabled>2. Get Key (Đang khóa)</button>
+
+    <div id="keyCard" class="key-card">
+      <div id="keyCode" class="key-code"></div>
+      <div id="keySub" class="key-sub"></div>
+      <button id="copyBtn" class="btn btn-copy" onclick="copyKey()">Sao Chép Key</button>
+    </div>
+
+    <div class="history-box">
+      <div class="history-top">
+        <span>Lịch sử key đã cấp (chống trùng)</span>
+        <span id="keyCountText">0 mã</span>
+      </div>
+      <div id="historyList" class="history-list">
+        <div class="history-item"><span>Chưa có key nào được tạo</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const AD_SECONDS = 7;
+    const KEY_DURATION_MS = 12 * 60 * 60 * 1000;
+    const STORAGE_KEY = "mhert_issued_keys_v1";
+
+    const ADS = [
+      {
+        category: "Quảng cáo Xe",
+        title: "MONSTER GT-R Street Spec",
+        copy: "Khung gầm thể thao, phanh hiệu năng cao và màu sơn xanh neon nổi bật.",
+        svg: `
+          <svg width="78" height="58" viewBox="0 0 78 58" fill="none">
+            <rect width="78" height="58" rx="8" fill="#0d1b14"/>
+            <path d="M12 36L20 22H48L62 32L66 36H12Z" fill="#22c55e"/>
+            <path d="M22 24H45L54 32H18L22 24Z" fill="#052e16"/>
+            <circle cx="23" cy="39" r="7" fill="#111827" stroke="#a3e635" stroke-width="2.5"/>
+            <circle cx="55" cy="39" r="7" fill="#111827" stroke="#a3e635" stroke-width="2.5"/>
+            <rect x="57" y="33" width="7" height="3" rx="1" fill="#fef08a"/>
+          </svg>
+        `
+      },
+      {
+        category: "Quảng cáo Đồ Chơi",
+        title: "Mecha Claw Action Figure",
+        copy: "Mô hình khớp nối linh hoạt 24 điểm, phụ kiện vũ khí &amp; đế trưng bày phát sáng.",
+        svg: `
+          <svg width="78" height="58" viewBox="0 0 78 58" fill="none">
+            <rect width="78" height="58" rx="8" fill="#171124"/>
+            <rect x="28" y="12" width="22" height="16" rx="4" fill="#38bdf8"/>
+            <rect x="24" y="30" width="30" height="14" rx="4" fill="#818cf8"/>
+            <circle cx="34" cy="20" r="2.5" fill="#fef08a"/>
+            <circle cx="44" cy="20" r="2.5" fill="#fef08a"/>
+            <path d="M18 33L24 35M60 33L54 35" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        `
+      },
+      {
+        category: "Quảng cáo Gaming Gear",
+        title: "Pulse Mechanical Keycap Set",
+        copy: "Keycap xuyên LED siêu nét, gõ êm tay cho các trận đấu tốc độ cao.",
+        svg: `
+          <svg width="78" height="58" viewBox="0 0 78 58" fill="none">
+            <rect width="78" height="58" rx="8" fill="#1e1508"/>
+            <rect x="14" y="16" width="14" height="12" rx="3" fill="#fbbf24"/>
+            <rect x="32" y="16" width="14" height="12" rx="3" fill="#f97316"/>
+            <rect x="50" y="16" width="14" height="12" rx="3" fill="#fbbf24"/>
+            <rect x="22" y="32" width="34" height="11" rx="3" fill="#334155" stroke="#fbbf24" stroke-width="1.5"/>
+          </svg>
+        `
+      }
+    ];
+
+    let adIndex = 0;
+    let adDone = false;
+    let adRunning = false;
+
+    function loadKeys() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveKeys(list) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+      } catch {}
+    }
+
+    function renderAdShowcase() {
+      const ad = ADS[adIndex % ADS.length];
+      document.getElementById("adVisual").innerHTML = ad.svg;
+      document.getElementById("adCategory").innerText = ad.category;
+      document.getElementById("adTitle").innerText = ad.title;
+      document.getElementById("adCopy").innerHTML = ad.copy;
+    }
+
+    function randBlock(len) {
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      let out = "";
+      for (let i = 0; i < len; i++) {
+        out += chars[Math.floor(Math.random() * chars.length)];
+      }
+      return out;
+    }
+
+    function generateNonDuplicateKey(existingList) {
+      const usedSet = new Set(existingList.map((item) => item.key));
+      let candidate = "";
+      let guard = 0;
+      do {
+        candidate = `Mhert-${randBlock(4)}-${randBlock(4)}-${randBlock(4)}`;
+        guard++;
+      } while (usedSet.has(candidate) && guard < 100);
+      return candidate;
+    }
+
+    function renderHistory() {
+      const now = Date.now();
+      const list = loadKeys();
+      const container = document.getElementById("historyList");
+      const countEl = document.getElementById("keyCountText");
+
+      countEl.innerText = `${list.length} mã`;
+
+      if (!list.length) {
+        container.innerHTML = `<div class="history-item"><span>Chưa có key nào được tạo</span></div>`;
+        return;
+      }
+
+      container.innerHTML = list
+        .slice(0, 5)
+        .map((item) => {
+          const expired = now >= item.expiresAt;
+          return `
+            <div class="history-item">
+              <span>${item.key}</span>
+              <span class="${expired ? "status-expired" : "status-active"}">
+                ${expired ? "Hết 12h (Cần đổi)" : "Còn hạn"}
+              </span>
+            </div>
+          `;
+        })
+        .join("");
+    }
+
+    function startAd() {
+      if (adRunning || adDone) return;
+      adRunning = true;
+
+      const watchBtn = document.getElementById("watchAdBtn");
+      const getBtn = document.getElementById("getKeyBtn");
+      const bar = document.getElementById("adBar");
+      const pctEl = document.getElementById("adPct");
+      const statusEl = document.getElementById("adStatus");
+      const stateEl = document.getElementById("adStateText");
+
+      const totalMs = AD_SECONDS * 1000;
+      const start = Date.now();
+
+      watchBtn.disabled = true;
+      stateEl.innerText = "Đang phát";
+
+      const timer = setInterval(() => {
+        const elapsed = Date.now() - start;
+        const pct = Math.min(100, Math.round((elapsed / totalMs) * 100));
+        const secLeft = Math.max(1, Math.ceil((totalMs - elapsed) / 1000));
+
+        bar.style.width = pct + "%";
+        pctEl.innerText = pct + "%";
+        statusEl.innerText = `Đang xem quảng cáo... còn ${secLeft}s`;
+        watchBtn.innerText = `Đang xem quảng cáo (${secLeft}s)`;
+
+        if (elapsed >= totalMs) {
+          clearInterval(timer);
+          adRunning = false;
+          adDone = true;
+
+          bar.style.width = "100%";
+          pctEl.innerText = "100%";
+          statusEl.innerText = "Hoàn tất xem quảng cáo!";
+          stateEl.innerText = "Đã mở khóa";
+          stateEl.classList.add("ok");
+
+          watchBtn.innerText = "Đã Xem Quảng Cáo ✓";
+          getBtn.disabled = false;
+          getBtn.innerText = "2. Get Key Ngay";
+        }
+      }, 100);
+    }
+
+    function generateUniqueKey() {
+      if (!adDone) return;
+
+      const now = Date.now();
+      const expiresAt = now + KEY_DURATION_MS;
+      const list = loadKeys();
+
+      // Đánh dấu hết hạn các key đã qua 12 giờ trước khi tạo mã mới không trùng
+      const updatedList = list.map((item) => ({
+        ...item,
+        expired: now >= item.expiresAt
+      }));
+
+      const newKey = generateNonDuplicateKey(updatedList);
+      updatedList.unshift({
+        key: newKey,
+        createdAt: now,
+        expiresAt,
+        expired: false
+      });
+
+      saveKeys(updatedList);
+      renderHistory();
+
+      document.getElementById("keyCode").innerText = newKey;
+      document.getElementById("keySub").innerText =
+        `Hiệu lực 12 giờ • Hết hạn lúc: ${new Date(expiresAt).toLocaleString("vi-VN")}\nQua 12 giờ sẽ tự tính hết hạn và cấp mã mới không trùng key cũ.`;
+      document.getElementById("keyCard").style.display = "block";
+      document.getElementById("copyBtn").innerText = "Sao Chép Key";
+
+      // Đổi sang quảng cáo khác & khóa lại nút Get Key cho lượt sau
+      adIndex = (adIndex + 1) % ADS.length;
+      renderAdShowcase();
+
+      adDone = false;
+      const watchBtn = document.getElementById("watchAdBtn");
+      const getBtn = document.getElementById("getKeyBtn");
+      const stateEl = document.getElementById("adStateText");
+
+      getBtn.disabled = true;
+      getBtn.innerText = "2. Get Key (Đang khóa)";
+      watchBtn.disabled = false;
+      watchBtn.innerText = `1. Xem Quảng Cáo Mới (${AD_SECONDS}s)`;
+
+      stateEl.innerText = "Chưa hoàn tất";
+      stateEl.classList.remove("ok");
+      document.getElementById("adBar").style.width = "0%";
+      document.getElementById("adPct").innerText = "0%";
+      document.getElementById("adStatus").innerText = "Cần xem quảng cáo để lấy key tiếp";
+    }
+
+    function copyKey() {
+      const code = document.getElementById("keyCode").innerText;
+      const btn = document.getElementById("copyBtn");
+      navigator.clipboard.writeText(code).then(() => {
+        btn.innerText = "Đã Sao Chép ✓";
+        setTimeout(() => {
+          btn.innerText = "Sao Chép Key";
+        }, 1800);
+      });
+    }
+
+    renderAdShowcase();
+    renderHistory();
+    setInterval(renderHistory, 30000);
+  </script>
+</body>
+</html>
