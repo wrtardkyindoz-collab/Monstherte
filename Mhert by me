@@ -1,0 +1,302 @@
+-- MHERT MENU - FPS/PING BAR + QUICK TELEPORT + ANTI SUITE (XANH NEON)
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+local Lighting = game:GetService("Lighting")
+local Stats = game:GetService("Stats")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+if playerGui:FindFirstChild("MhertCustomMenu") then
+	playerGui.MhertCustomMenu:Destroy()
+end
+
+local THEME = {
+	BgDark = Color3.fromRGB(16, 17, 20),
+	BgPanel = Color3.fromRGB(24, 26, 31),
+	BgRow = Color3.fromRGB(32, 35, 42),
+	BgSubTab = Color3.fromRGB(28, 30, 36),
+	NeonGreen = Color3.fromRGB(132, 240, 48),
+	NeonSoft = Color3.fromRGB(42, 68, 22),
+	Border = Color3.fromRGB(58, 63, 74),
+	Text = Color3.fromRGB(238, 242, 246),
+	Muted = Color3.fromRGB(145, 152, 166),
+	ToggleOff = Color3.fromRGB(58, 63, 74),
+	Knob = Color3.fromRGB(245, 248, 252)
+}
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "MhertCustomMenu"
+screenGui.ResetOnSpawn = false
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+local okParent = pcall(function()
+	if typeof(gethui) == "function" then
+		screenGui.Parent = gethui()
+	else
+		screenGui.Parent = playerGui
+	end
+end)
+if not okParent or not screenGui.Parent then
+	screenGui.Parent = playerGui
+end
+
+-- Logo Mhert 3 net xanh neon
+local function makeLogo(parent, sizePx, posUDim2)
+	local box = Instance.new("Frame")
+	box.Size = UDim2.new(0, sizePx, 0, sizePx)
+	box.Position = posUDim2
+	box.BackgroundColor3 = Color3.fromRGB(9, 11, 10)
+	box.BorderSizePixel = 0
+	box.Parent = parent
+	Instance.new("UICorner", box).CornerRadius = UDim.new(0, 6)
+	local st = Instance.new("UIStroke", box)
+	st.Color = THEME.NeonGreen
+	st.Thickness = 1.2
+
+	local bars = {
+		{x = 0.16, h = 0.72, top = 0.12},
+		{x = 0.44, h = 0.80, top = 0.10},
+		{x = 0.72, h = 0.64, top = 0.16}
+	}
+	for _, b in ipairs(bars) do
+		local bar = Instance.new("Frame")
+		bar.Size = UDim2.new(0.14, 0, b.h, 0)
+		bar.Position = UDim2.new(b.x, 0, b.top, 0)
+		bar.BackgroundColor3 = THEME.NeonGreen
+		bar.BorderSizePixel = 0
+		bar.Parent = box
+		Instance.new("UICorner", bar).CornerRadius = UDim.new(1, 0)
+	end
+	return box
+end
+
+-- Thanh FPS | ms gon o goc tren ben trai (khong dung ly ca phe)
+local hudBar = Instance.new("Frame")
+hudBar.Name = "MhertHudBar"
+hudBar.Size = UDim2.new(0, 198, 0, 26)
+hudBar.Position = UDim2.new(0, 12, 0, 56)
+hudBar.BackgroundColor3 = THEME.BgPanel
+hudBar.BackgroundTransparency = 0.12
+hudBar.BorderSizePixel = 0
+hudBar.Parent = screenGui
+Instance.new("UICorner", hudBar).CornerRadius = UDim.new(0, 8)
+local hudStroke = Instance.new("UIStroke", hudBar)
+hudStroke.Color = THEME.Border
+hudStroke.Thickness = 1
+
+local hudLbl = Instance.new("TextLabel")
+hudLbl.Size = UDim2.new(1, -12, 1, 0)
+hudLbl.Position = UDim2.new(0, 8, 0, 0)
+hudLbl.BackgroundTransparency = 1
+hudLbl.Text = "MHERT  |  -- FPS  |  -- ms"
+hudLbl.TextXAlignment = Enum.TextXAlignment.Left
+hudLbl.TextColor3 = THEME.NeonGreen
+hudLbl.Font = Enum.Font.GothamBold
+hudLbl.TextSize = 10
+hudLbl.Parent = hudBar
+
+-- Nut Teleport nhanh ngay canh thanh HUD
+local tpQuickBtn = Instance.new("TextButton")
+tpQuickBtn.Name = "QuickTeleportBtn"
+tpQuickBtn.Size = UDim2.new(0, 74, 0, 26)
+tpQuickBtn.Position = UDim2.new(0, 216, 0, 56)
+tpQuickBtn.BackgroundColor3 = THEME.NeonSoft
+tpQuickBtn.Text = "TP Saved"
+tpQuickBtn.TextColor3 = THEME.NeonGreen
+tpQuickBtn.Font = Enum.Font.GothamBold
+tpQuickBtn.TextSize = 10
+tpQuickBtn.Parent = screenGui
+Instance.new("UICorner", tpQuickBtn).CornerRadius = UDim.new(0, 8)
+local tpStroke = Instance.new("UIStroke", tpQuickBtn)
+tpStroke.Color = THEME.NeonGreen
+tpStroke.Thickness = 1
+
+-- Nut mo/an menu chinh
+local floatBtn = Instance.new("TextButton")
+floatBtn.Size = UDim2.new(0, 38, 0, 38)
+floatBtn.Position = UDim2.new(0, 12, 0, 90)
+floatBtn.BackgroundTransparency = 1
+floatBtn.Text = ""
+floatBtn.Parent = screenGui
+makeLogo(floatBtn, 38, UDim2.new(0, 0, 0, 0))
+
+-- Cua so menu chinh
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 580, 0, 336)
+mainFrame.Position = UDim2.new(0.5, -290, 0.5, -168)
+mainFrame.BackgroundColor3 = THEME.BgDark
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Parent = screenGui
+Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 10)
+local mainStroke = Instance.new("UIStroke", mainFrame)
+mainStroke.Color = THEME.Border
+mainStroke.Thickness = 1.2
+
+local topBar = Instance.new("Frame")
+topBar.Size = UDim2.new(1, 0, 0, 44)
+topBar.BackgroundColor3 = THEME.BgPanel
+topBar.BorderSizePixel = 0
+topBar.Parent = mainFrame
+Instance.new("UICorner", topBar).CornerRadius = UDim.new(0, 10)
+
+local topFix = Instance.new("Frame")
+topFix.Size = UDim2.new(1, 0, 0, 10)
+topFix.Position = UDim2.new(0, 0, 1, -10)
+topFix.BackgroundColor3 = THEME.BgPanel
+topFix.BorderSizePixel = 0
+topFix.Parent = topBar
+
+makeLogo(topBar, 28, UDim2.new(0, 10, 0.5, -14))
+
+local titleLbl = Instance.new("TextLabel")
+titleLbl.Size = UDim2.new(0, 260, 0, 18)
+titleLbl.Position = UDim2.new(0, 46, 0, 5)
+titleLbl.BackgroundTransparency = 1
+titleLbl.Text = "MHERT  •  INVINCIBILITY"
+titleLbl.TextXAlignment = Enum.TextXAlignment.Left
+titleLbl.TextColor3 = THEME.Text
+titleLbl.Font = Enum.Font.GothamBold
+titleLbl.TextSize = 13
+titleLbl.Parent = topBar
+
+local statusLbl = Instance.new("TextLabel")
+statusLbl.Size = UDim2.new(0, 390, 0, 14)
+statusLbl.Position = UDim2.new(0, 46, 0, 23)
+statusLbl.BackgroundTransparency = 1
+statusLbl.Text = "Counter Attacks & Protect Your Friends  •  Ready"
+statusLbl.TextXAlignment = Enum.TextXAlignment.Left
+statusLbl.TextColor3 = THEME.NeonGreen
+statusLbl.Font = Enum.Font.Gotham
+statusLbl.TextSize = 10
+statusLbl.Parent = topBar
+
+local minBtn = Instance.new("TextButton")
+minBtn.Size = UDim2.new(0, 24, 0, 24)
+minBtn.Position = UDim2.new(1, -58, 0.5, -12)
+minBtn.BackgroundColor3 = THEME.BgRow
+minBtn.Text = "-"
+minBtn.TextColor3 = THEME.Text
+minBtn.Font = Enum.Font.GothamBold
+minBtn.TextSize = 14
+minBtn.Parent = topBar
+Instance.new("UICorner", minBtn).CornerRadius = UDim.new(0, 6)
+
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(0, 24, 0, 24)
+closeBtn.Position = UDim2.new(1, -30, 0.5, -12)
+closeBtn.BackgroundColor3 = THEME.BgRow
+closeBtn.Text = "X"
+closeBtn.TextColor3 = THEME.Text
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.TextSize = 12
+closeBtn.Parent = topBar
+Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 6)
+
+do
+	local dragging, dragInput, dragStart, startPos
+	topBar.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			dragging = true
+			dragStart = input.Position
+			startPos = mainFrame.Position
+			input.Changed:Connect(function()
+				if input.UserInputState == Enum.UserInputState.End then dragging = false end
+			end)
+		end
+	end)
+	topBar.InputChanged:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+			dragInput = input
+		end
+	end)
+	UserInputService.InputChanged:Connect(function(input)
+		if input == dragInput and dragging then
+			local delta = input.Position - dragStart
+			mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+		end
+	end)
+end
+
+local sideBar = Instance.new("Frame")
+sideBar.Size = UDim2.new(0, 40, 1, -44)
+sideBar.Position = UDim2.new(0, 0, 0, 44)
+sideBar.BackgroundColor3 = THEME.BgPanel
+sideBar.BorderSizePixel = 0
+sideBar.Parent = mainFrame
+
+local sideLayout = Instance.new("UIListLayout")
+sideLayout.Padding = UDim.new(0, 5)
+sideLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+sideLayout.SortOrder = Enum.SortOrder.LayoutOrder
+sideLayout.Parent = sideBar
+
+local sidePad = Instance.new("UIPadding")
+sidePad.PaddingTop = UDim.new(0, 8)
+sidePad.PaddingBottom = UDim.new(0, 8)
+sidePad.Parent = sideBar
+
+local content = Instance.new("Frame")
+content.Size = UDim2.new(1, -48, 1, -50)
+content.Position = UDim2.new(0, 44, 0, 47)
+content.BackgroundTransparency = 1
+content.Parent = mainFrame
+
+local modeBar = Instance.new("Frame")
+modeBar.Size = UDim2.new(1, 0, 0, 24)
+modeBar.BackgroundColor3 = THEME.BgSubTab
+modeBar.BorderSizePixel = 0
+modeBar.Parent = content
+Instance.new("UICorner", modeBar).CornerRadius = UDim.new(0, 6)
+
+local selfTabBtn = Instance.new("TextButton")
+selfTabBtn.Size = UDim2.new(0.5, -2, 1, -4)
+selfTabBtn.Position = UDim2.new(0, 2, 0, 2)
+selfTabBtn.BackgroundColor3 = THEME.NeonSoft
+selfTabBtn.Text = "Self"
+selfTabBtn.TextColor3 = THEME.NeonGreen
+selfTabBtn.Font = Enum.Font.GothamBold
+selfTabBtn.TextSize = 11
+selfTabBtn.Parent = modeBar
+Instance.new("UICorner", selfTabBtn).CornerRadius = UDim.new(0, 5)
+
+local othersTabBtn = Instance.new("TextButton")
+othersTabBtn.Size = UDim2.new(0.5, -2, 1, -4)
+othersTabBtn.Position = UDim2.new(0.5, 0, 0, 2)
+othersTabBtn.BackgroundColor3 = THEME.BgSubTab
+othersTabBtn.Text = "Others"
+othersTabBtn.TextColor3 = THEME.Muted
+othersTabBtn.Font = Enum.Font.GothamBold
+othersTabBtn.TextSize = 11
+othersTabBtn.Parent = modeBar
+Instance.new("UICorner", othersTabBtn).CornerRadius = UDim.new(0, 5)
+
+local colsWrap = Instance.new("Frame")
+colsWrap.Size = UDim2.new(1, 0, 1, -28)
+colsWrap.Position = UDim2.new(0, 0, 0, 28)
+colsWrap.BackgroundTransparency = 1
+colsWrap.Parent = content
+
+local leftCol = Instance.new("ScrollingFrame")
+leftCol.Size = UDim2.new(0.5, -4, 1, 0)
+leftCol.Position = UDim2.new(0, 0, 0, 0)
+leftCol.BackgroundColor3 = THEME.BgPanel
+leftCol.BorderSizePixel = 0
+leftCol.ScrollBarThickness = 3
+leftCol.ScrollBarImageColor3 = THEME.NeonGreen
+leftCol.CanvasSize = UDim2.new(0, 0, 0, 0)
+leftCol.AutomaticCanvasSize = Enum.AutomaticSize.Y
+leftCol.Parent = colsWrap
+Instance.new("UICorner", leftCol).CornerRadius = UDim.new(0, 8)
+
+local rightCol = Instance.new("ScrollingFrame")
+rightCol.Size = UDim2.new(0.5, -4, 1, 0)
+rightCol.Position = UDim2.new(0.5, 4, 0, 0)
+rightCol.BackgroundColor3 = THEME.BgPanel
+rightCol.BorderSizePixel = 0
+rightCol.ScrollBarThickness = 3
+rightCol.ScrollBarImageColor
