@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mhert • Get Key Hub</title>
+  <style>
+    :root {
+      --bg: #040705;
+      --panel: rgba(11, 19, 14, 0.9);
+      --line: rgba(74, 222, 128, 0.25);
+      --neon: #4ade80;
+      --lime: #a3e635;
+      --cyan: #2dd4bf;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background:
+        radial-gradient(circle at 15% 15%, rgba(74, 222, 128, 0.16), transparent 45%),
+        radial-gradient(circle at 85% 85%, rgba(45, 212, 191, 0.14), transparent 45%),
+        repeating-linear-gradient(
+          0deg,
+          rgba(255, 255, 255, 0.015) 0px,
+          rgba(255, 255, 255, 0.015) 1px,
+          transparent 1px,
+          transparent 28px
+        ),
+        var(--bg);
+      color: var(--text);
+    }
+
+    .card {
+      width: 100%;
+      max-width: 465px;
+      background: var(--panel);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 26px 22px;
+      box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.75),
+        0 0 35px rgba(74, 222, 128, 0.1);
+    }
+
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      color: var(--neon);
+      background: rgba(74, 222, 128, 0.12);
+      border: 1px solid rgba(74, 222, 128, 0.35);
+    }
+
+    .led {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--neon);
+      box-shadow: 0 0 10px var(--neon);
+    }
+
+    .prefix-tag {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 11.5px;
+      color: var(--lime);
+      background: rgba(163, 230, 53, 0.1);
+      border: 1px solid rgba(163, 230, 53, 0.25);
+      padding: 4px 9px;
+      border-radius: 8px;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      background: linear-gradient(90deg, #ffffff, var(--neon), var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .sub {
+      margin: 0 0 18px;
+      font-size: 13.5px;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+
+    .step-box {
+      background: rgba(3, 8, 5, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      border-radius: 16px;
+      padding: 15px;
+      margin-bottom: 16px;
+    }
+
+    .step-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .step-title {
+      color: var(--lime);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .step-badge {
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: rgba(248, 113, 113, 0.14);
+      color: #fca5a5;
+      border: 1px solid rgba(248, 113, 113, 0.3);
+    }
+
+    .step-badge.done {
+      background: rgba(74, 222, 128, 0.16);
+      color: var(--neon);
+      border-color: rgba(74, 222, 128, 0.35);
+    }
+
+    .ad-slot {
+      border-radius: 12px;
+      padding: 16px 12px;
+      text-align: center;
+      background: linear-gradient(135deg, rgba(74, 222, 128, 0.12), rgba(45, 212, 191, 0.08));
+      border: 1px dashed rgba(74, 222, 128, 0.42);
+    }
+
+    .ad-main-text {
+      font-size: 14px;
+      font-weight: 700;
+      color: #f8fafc;
+      margin-bottom: 4px;
+    }
+
+    .ad-hint {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .bar-track {
+      margin-top: 12px;
+      height: 7px;
+      width: 100%;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.15);
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--neon), var(--cyan));
+      transition: width 0.15s linear;
+    }
+
+    .bar-info {
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .btn {
+      width: 100%;
+      border: none;
+      border-radius: 13px;
+      padding: 13.5px 16px;
+      font-size: 14.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.14s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    }
+
+    .btn:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+
+    .btn-watch {
+      background: rgba(74, 222, 128, 0.14);
+      border: 1px solid rgba(74, 222, 128, 0.45);
+      color: var(--neon);
+      margin-bottom: 10px;
+    }
+
+    .btn-watch:hover:not(:disabled) {
+      background: rgba(74, 222, 128, 0.24);
+      box-shadow: 0 0 18px rgba(74, 222, 128, 0.18);
+    }
+
+    .btn-get {
+      background: linear-gradient(135deg, #16a34a, #0d9488);
+      color: #ffffff;
+      box-shadow: 0 10px 24px rgba(22, 163, 74, 0.32);
+    }
+
+    .btn-get:disabled {
+      background: #1e2923;
+      color: #64746b;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    .key-panel {
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(2, 7, 4, 0.92);
+      border: 1px solid rgba(74, 222, 128, 0.45);
+      box-shadow: inset 0 0 20px rgba(74, 222, 128, 0.06);
+      display: none;
+      animation: popIn 0.24s ease;
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .key-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      color: var(--muted);
+      margin-bottom: 7px;
+      text-align: center;
+    }
+
+    .key-value {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--neon);
+      background: rgba(74, 222, 128, 0.09);
+      border: 1px solid rgba(74, 222, 128, 0.28);
+      border-radius: 11px;
+      padding: 11px;
+      text-align: center;
+      word-break: break-all;
+      letter-spacing: 0.6px;
+    }
+
+    .key-exp {
+      margin: 9px 0 12px;
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .btn-copy {
+      background: rgba(45, 212, 191, 0.16);
+      border: 1px solid rgba(45, 212, 191, 0.45);
+      color: #99f6e4;
+      padding: 10.5px 14px;
+      font-size: 13.5px;
+    }
+
+    .btn-copy:hover {
+      background: rgba(45, 212, 191, 0.26);
+    }
+
+    .foot {
+      margin-top: 16px;
+      font-size: 11.5px;
+      color: #64748b;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header-row">
+      <div class="pill"><span class="led"></span> MHERT PORTAL</div>
+      <span class="prefix-tag">Key: Mhert-...</span>
+    </div>
+
+    <h1>Mhert Get Key</h1>
+    <p class="sub">Bắt buộc xem hết quảng cáo để mở khóa nút lấy key cho script <strong>Mhert</strong>.</p>
+
+    <div class="step-box">
+      <div class="step-top">
+        <span class="step-title">Bước 1 • Xác minh quảng cáo</span>
+        <span id="adBadge" class="step-badge">Bắt buộc xem</span>
+      </div>
+
+      <div class="ad-slot">
+        <div class="ad-main-text">Khu vực quảng cáo của Mhert</div>
+        <div class="ad-hint">Xem đủ 7 giây để hệ thống mở khóa nút nhận key.</div>
+      </div>
+
+      <div class="bar-track">
+        <div id="adBar" class="bar-fill"></div>
+      </div>
+
+      <div class="bar-info">
+        <span id="adStatus">Chưa xem quảng cáo</span>
+        <span id="adPct">0%</span>
+      </div>
+    </div>
+
+    <button id="watchBtn" class="btn btn-watch" onclick="watchAd()">Xem Quảng Cáo (7s)</button>
+    <button id="getKeyBtn" class="btn btn-get" onclick="createMhertKey()" disabled>Get Key (Khóa)</button>
+
+    <div id="keyPanel" class="key-panel">
+      <div class="key-label">Key của bạn đã sẵn sàng</div>
+      <div id="keyText" class="key-value"></div>
+      <div id="keyExp" class="key-exp"></div>
+      <button id="copyBtn" class="btn btn-copy" onclick="copyKey()">Sao Chép Key</button>
+    </div>
+
+    <div class="foot">Mhert Key System • Định dạng chuẩn Mhert-&lt;mã key&gt;</div>
+  </div>
+
+  <script>
+    const AD_DURATION_MS = 7000;
+    const KEY_HOURS = 12;
+
+    let adWatched = false;
+    let isWatching = false;
+
+    function randomCode(len) {
+      const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      let out = "";
+      for (let i = 0; i < len; i++) {
+        out += alphabet[Math.floor(Math.random() * alphabet.length)];
+      }
+      return out;
+    }
+
+    function watchAd() {
+      if (isWatching || adWatched) return;
+      isWatching = true;
+
+      // Nếu muốn mở link quảng cáo ngoài khi người dùng bấm xem, bỏ comment dòng dưới:
+      // window.open("https://your-ad-link-here.com", "_blank");
+
+      const watchBtn = document.getElementById("watchBtn");
+      const getKeyBtn = document.getElementById("getKeyBtn");
+      const adBar = document.getElementById("adBar");
+      const adStatus = document.getElementById("adStatus");
+      const adPct = document.getElementById("adPct");
+      const adBadge = document.getElementById("adBadge");
+
+      const start = Date.now();
+      watchBtn.disabled = true;
+      adStatus.innerText = "Đang chạy quảng cáo...";
+
+      const timer = setInterval(() => {
+        const elapsed = Date.now() - start;
+        const pct = Math.min(100, Math.round((elapsed / AD_DURATION_MS) * 100));
+        const left = Math.max(1, Math.ceil((AD_DURATION_MS - elapsed) / 1000));
+
+        adBar.style.width = pct + "%";
+        adPct.innerText = pct + "%";
+        adStatus.innerText = `Vui lòng đợi hết quảng cáo (${left}s)...`;
+        watchBtn.innerText = `Đang xem quảng cáo (${left}s)`;
+
+        if (elapsed >= AD_DURATION_MS) {
+          clearInterval(timer);
+          isWatching = false;
+          adWatched = true;
+
+          adBar.style.width = "100%";
+          adPct.innerText = "100%";
+          adStatus.innerText = "Đã xem xong quảng cáo!";
+          adBadge.innerText = "Đã mở khóa";
+          adBadge.classList.add("done");
+
+          watchBtn.innerText = "Đã Xem Quảng Cáo ✓";
+          getKeyBtn.disabled = false;
+          getKeyBtn.innerText = "Get Key Ngay";
+        }
+      }, 100);
+    }
+
+    function createMhertKey() {
+      if (!adWatched) return;
+
+      const generatedKey = `Mhert-${randomCode(4)}-${randomCode(4)}-${randomCode(4)}`;
+      const expireAt = new Date(Date.now() + KEY_HOURS * 60 * 60 * 1000);
+
+      document.getElementById("keyText").innerText = generatedKey;
+      document.getElementById("keyExp").innerText =
+        `Hiệu lực ${KEY_HOURS} giờ • Hết hạn lúc: ${expireAt.toLocaleString("vi-VN")}`;
+      document.getElementById("keyPanel").style.display = "block";
+      document.getElementById("copyBtn").innerText = "Sao Chép Key";
+
+      // Khóa lại sau khi cấp key để lần sau người dùng phải xem quảng cáo tiếp
+      adWatched = false;
+      const watchBtn = document.getElementById("watchBtn");
+      const getKeyBtn = document.getElementById("getKeyBtn");
+      const adBadge = document.getElementById("adBadge");
+
+      getKeyBtn.disabled = true;
+      getKeyBtn.innerText = "Get Key (Khóa)";
+      watchBtn.disabled = false;
+      watchBtn.innerText = "Xem Quảng Cáo Mới (7s)";
+
+      adBadge.innerText = "Bắt buộc xem";
+      adBadge.classList.remove("done");
+      document.getElementById("adBar").style.width = "0%";
+      document.getElementById("adPct").innerText = "0%";
+      document.getElementById("adStatus").innerText = "Cần xem quảng cáo để lấy key tiếp";
+    }
+
+    function copyKey() {
+      const key = document.getElementById("keyText").innerText;
+      const btn = document.getElementById("copyBtn");
+      navigator.clipboard.writeText(key).then(() => {
+        btn.innerText = "Đã Sao Chép ✓";
+        setTimeout(() => {
+          btn.innerText = "Sao Chép Key";
+        }, 1800);
+      });
+    }
+  </script>
+</body>
+</html>
