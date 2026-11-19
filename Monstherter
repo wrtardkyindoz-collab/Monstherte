@@ -1,0 +1,635 @@
+-- MHERT MENU - 2 COT + LOGO XANH NEON + LOGIC COT TRAI CO BAN
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+if playerGui:FindFirstChild("MhertCustomMenu") then
+	playerGui.MhertCustomMenu:Destroy()
+end
+
+local THEME = {
+	BgDark = Color3.fromRGB(14, 15, 18),
+	BgPanel = Color3.fromRGB(22, 24, 29),
+	BgRow = Color3.fromRGB(30, 33, 39),
+	NeonGreen = Color3.fromRGB(132, 240, 48),
+	Border = Color3.fromRGB(52, 58, 68),
+	Text = Color3.fromRGB(242, 245, 248),
+	Muted = Color3.fromRGB(148, 156, 170),
+	ToggleOff = Color3.fromRGB(64, 70, 82),
+	Knob = Color3.fromRGB(255, 255, 255)
+}
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "MhertCustomMenu"
+screenGui.ResetOnSpawn = false
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+local parentOk = pcall(function()
+	if typeof(gethui) == "function" then
+		screenGui.Parent = gethui()
+	else
+		screenGui.Parent = playerGui
+	end
+end)
+if not parentOk or not screenGui.Parent then
+	screenGui.Parent = playerGui
+end
+
+-- Logo Mhert o goc tren trai (thay cho icon ca phe)
+local function makeLogo(parent, sizePx, posUDim2)
+	local box = Instance.new("Frame")
+	box.Size = UDim2.new(0, sizePx, 0, sizePx)
+	box.Position = posUDim2
+	box.BackgroundColor3 = Color3.fromRGB(8, 10, 9)
+	box.BorderSizePixel = 0
+	box.Parent = parent
+	Instance.new("UICorner", box).CornerRadius = UDim.new(0, 6)
+	local st = Instance.new("UIStroke", box)
+	st.Color = THEME.NeonGreen
+	st.Thickness = 1.2
+
+	local bars = {
+		{x = 0.16, h = 0.72, top = 0.12},
+		{x = 0.44, h = 0.80, top = 0.10},
+		{x = 0.72, h = 0.64, top = 0.16}
+	}
+	for _, b in ipairs(bars) do
+		local bar = Instance.new("Frame")
+		bar.Size = UDim2.new(0.14, 0, b.h, 0)
+		bar.Position = UDim2.new(b.x, 0, b.top, 0)
+		bar.BackgroundColor3 = THEME.NeonGreen
+		bar.BorderSizePixel = 0
+		bar.Parent = box
+		Instance.new("UICorner", bar).CornerRadius = UDim.new(1, 0)
+	end
+	return box
+end
+
+local floatBtn = Instance.new("TextButton")
+floatBtn.Size = UDim2.new(0, 38, 0, 38)
+floatBtn.Position = UDim2.new(0, 12, 0, 96)
+floatBtn.BackgroundTransparency = 1
+floatBtn.Text = ""
+floatBtn.Parent = screenGui
+makeLogo(floatBtn, 38, UDim2.new(0, 0, 0, 0))
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 580, 0, 330)
+mainFrame.Position = UDim2.new(0.5, -290, 0.5, -165)
+mainFrame.BackgroundColor3 = THEME.BgDark
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Parent = screenGui
+Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 10)
+local mainStroke = Instance.new("UIStroke", mainFrame)
+mainStroke.Color = THEME.Border
+mainStroke.Thickness = 1.2
+
+local topBar = Instance.new("Frame")
+topBar.Size = UDim2.new(1, 0, 0, 42)
+topBar.BackgroundColor3 = THEME.BgPanel
+topBar.BorderSizePixel = 0
+topBar.Parent = mainFrame
+Instance.new("UICorner", topBar).CornerRadius = UDim.new(0, 10)
+
+local topFix = Instance.new("Frame")
+topFix.Size = UDim2.new(1, 0, 0, 10)
+topFix.Position = UDim2.new(0, 0, 1, -10)
+topFix.BackgroundColor3 = THEME.BgPanel
+topFix.BorderSizePixel = 0
+topFix.Parent = topBar
+
+makeLogo(topBar, 28, UDim2.new(0, 10, 0.5, -14))
+
+local titleLbl = Instance.new("TextLabel")
+titleLbl.Size = UDim2.new(0, 260, 0, 18)
+titleLbl.Position = UDim2.new(0, 46, 0, 5)
+titleLbl.BackgroundTransparency = 1
+titleLbl.Text = "MHERT  •  MENU"
+titleLbl.TextXAlignment = Enum.TextXAlignment.Left
+titleLbl.TextColor3 = THEME.Text
+titleLbl.Font = Enum.Font.GothamBold
+titleLbl.TextSize = 13
+titleLbl.Parent = topBar
+
+local statusLbl = Instance.new("TextLabel")
+statusLbl.Size = UDim2.new(0, 360, 0, 14)
+statusLbl.Position = UDim2.new(0, 46, 0, 22)
+statusLbl.BackgroundTransparency = 1
+statusLbl.Text = "Self  |  Others  •  Left Column Ready"
+statusLbl.TextXAlignment = Enum.TextXAlignment.Left
+statusLbl.TextColor3 = THEME.NeonGreen
+statusLbl.Font = Enum.Font.Gotham
+statusLbl.TextSize = 10
+statusLbl.Parent = topBar
+
+local minBtn = Instance.new("TextButton")
+minBtn.Size = UDim2.new(0, 24, 0, 24)
+minBtn.Position = UDim2.new(1, -58, 0.5, -12)
+minBtn.BackgroundColor3 = THEME.BgRow
+minBtn.Text = "-"
+minBtn.TextColor3 = THEME.Text
+minBtn.Font = Enum.Font.GothamBold
+minBtn.TextSize = 14
+minBtn.Parent = topBar
+Instance.new("UICorner", minBtn).CornerRadius = UDim.new(0, 6)
+
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(0, 24, 0, 24)
+closeBtn.Position = UDim2.new(1, -30, 0.5, -12)
+closeBtn.BackgroundColor3 = THEME.BgRow
+closeBtn.Text = "X"
+closeBtn.TextColor3 = THEME.Text
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.TextSize = 12
+closeBtn.Parent = topBar
+Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 6)
+
+do
+	local dragging, dragInput, dragStart, startPos
+	topBar.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			dragging = true
+			dragStart = input.Position
+			startPos = mainFrame.Position
+			input.Changed:Connect(function()
+				if input.UserInputState == Enum.UserInputState.End then dragging = false end
+			end)
+		end
+	end)
+	topBar.InputChanged:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+			dragInput = input
+		end
+	end)
+	UserInputService.InputChanged:Connect(function(input)
+		if input == dragInput and dragging then
+			local delta = input.Position - dragStart
+			mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+		end
+	end)
+end
+
+local sideBar = Instance.new("Frame")
+sideBar.Size = UDim2.new(0, 42, 1, -42)
+sideBar.Position = UDim2.new(0, 0, 0, 42)
+sideBar.BackgroundColor3 = THEME.BgPanel
+sideBar.BorderSizePixel = 0
+sideBar.Parent = mainFrame
+
+local sideLayout = Instance.new("UIListLayout")
+sideLayout.Padding = UDim.new(0, 6)
+sideLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+sideLayout.SortOrder = Enum.SortOrder.LayoutOrder
+sideLayout.Parent = sideBar
+
+local sidePad = Instance.new("UIPadding")
+sidePad.PaddingTop = UDim.new(0, 8)
+sidePad.Parent = sideBar
+
+local content = Instance.new("Frame")
+content.Size = UDim2.new(1, -50, 1, -48)
+content.Position = UDim2.new(0, 46, 0, 44)
+content.BackgroundTransparency = 1
+content.Parent = mainFrame
+
+local leftCol = Instance.new("ScrollingFrame")
+leftCol.Size = UDim2.new(0.5, -4, 1, 0)
+leftCol.Position = UDim2.new(0, 0, 0, 0)
+leftCol.BackgroundColor3 = THEME.BgPanel
+leftCol.BorderSizePixel = 0
+leftCol.ScrollBarThickness = 3
+leftCol.ScrollBarImageColor3 = THEME.NeonGreen
+leftCol.CanvasSize = UDim2.new(0, 0, 0, 0)
+leftCol.AutomaticCanvasSize = Enum.AutomaticSize.Y
+leftCol.Parent = content
+Instance.new("UICorner", leftCol).CornerRadius = UDim.new(0, 8)
+
+local rightCol = Instance.new("ScrollingFrame")
+rightCol.Size = UDim2.new(0.5, -4, 1, 0)
+rightCol.Position = UDim2.new(0.5, 4, 0, 0)
+rightCol.BackgroundColor3 = THEME.BgPanel
+rightCol.BorderSizePixel = 0
+rightCol.ScrollBarThickness = 3
+rightCol.ScrollBarImageColor3 = THEME.NeonGreen
+rightCol.CanvasSize = UDim2.new(0, 0, 0, 0)
+rightCol.AutomaticCanvasSize = Enum.AutomaticSize.Y
+rightCol.Parent = content
+Instance.new("UICorner", rightCol).CornerRadius = UDim.new(0, 8)
+
+for _, col in ipairs({leftCol, rightCol}) do
+	local l = Instance.new("UIListLayout")
+	l.Padding = UDim.new(0, 5)
+	l.SortOrder = Enum.SortOrder.LayoutOrder
+	l.Parent = col
+
+	local p = Instance.new("UIPadding")
+	p.PaddingTop = UDim.new(0, 6)
+	p.PaddingBottom = UDim.new(0, 6)
+	p.PaddingLeft = UDim.new(0, 6)
+	p.PaddingRight = UDim.new(0, 6)
+	p.Parent = col
+end
+
+local savedCFrame = nil
+local conns = {}
+local waterPart = nil
+
+local function stopConn(key)
+	if conns[key] then
+		conns[key]:Disconnect()
+		conns[key] = nil
+	end
+end
+
+local function removeWaterPart()
+	if waterPart and waterPart.Parent then
+		waterPart:Destroy()
+	end
+	waterPart = nil
+end
+
+local Actions = {
+	["Anti Ragdoll"] = function(state)
+		stopConn("ragdoll")
+		if state then
+			conns.ragdoll = RunService.Stepped:Connect(function()
+				local char = player.Character
+				local hum = char and char:FindFirstChildOfClass("Humanoid")
+				if hum then
+					hum:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
+					hum:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+					if hum:GetState() == Enum.HumanoidStateType.Ragdoll or hum:GetState() == Enum.HumanoidStateType.FallingDown then
+						hum:ChangeState(Enum.HumanoidStateType.GettingUp)
+					end
+				end
+				if char then
+					for _, desc in ipairs(char:GetDescendants()) do
+						if desc:IsA("BallSocketConstraint") or desc:IsA("HingeConstraint") then
+							desc.Enabled = false
+						end
+					end
+				end
+			end)
+			return "Anti Ragdoll ON"
+		end
+		return "Anti Ragdoll OFF"
+	end,
+
+	["Anti Grab"] = function(state)
+		stopConn("grab")
+		if state then
+			conns.grab = RunService.Heartbeat:Connect(function()
+				local char = player.Character
+				local hrp = char and char:FindFirstChild("HumanoidRootPart")
+				if hrp then
+					for _, obj in ipairs(hrp:GetChildren()) do
+						if obj:IsA("BodyPosition") or obj:IsA("BodyGyro") or obj:IsA("BodyVelocity") or obj:IsA("AlignPosition") or obj:IsA("AlignOrientation") or obj:IsA("WeldConstraint") then
+							if obj.Name ~= "RootJoint" then
+								pcall(function() obj:Destroy() end)
+							end
+						end
+					end
+				end
+			end)
+			return "Anti Grab ON"
+		end
+		return "Anti Grab OFF"
+	end,
+
+	["Lock Position"] = function(state)
+		stopConn("lockpos")
+		if state then
+			local char = player.Character
+			local hrp = char and char:FindFirstChild("HumanoidRootPart")
+			local targetCF = savedCFrame or (hrp and hrp.CFrame)
+			if targetCF then
+				conns.lockpos = RunService.Heartbeat:Connect(function()
+					local c = player.Character
+					local root = c and c:FindFirstChild("HumanoidRootPart")
+					if root then
+						root.CFrame = targetCF
+						root.AssemblyLinearVelocity = Vector3.zero
+					end
+				end)
+				return "Lock Position ON"
+			end
+		end
+		return "Lock Position OFF"
+	end,
+
+	["Save Position"] = function(state)
+		if state then
+			local char = player.Character
+			local hrp = char and char:FindFirstChild("HumanoidRootPart")
+			if hrp then
+				savedCFrame = hrp.CFrame
+				return "Da luu vi tri hien tai"
+			end
+			return "Khong tim thay HRP"
+		end
+		return "Save Position OFF"
+	end,
+
+	["Anti Explosion"] = function(state)
+		stopConn("explosion")
+		if state then
+			conns.explosion = Workspace.DescendantAdded:Connect(function(obj)
+				if obj:IsA("Explosion") then
+					obj.BlastRadius = 0
+					obj.BlastPressure = 0
+					pcall(function() obj:Destroy() end)
+				end
+			end)
+			for _, obj in ipairs(Workspace:GetDescendants()) do
+				if obj:IsA("Explosion") then
+					obj.BlastRadius = 0
+					obj.BlastPressure = 0
+				end
+			end
+			return "Anti Explosion ON"
+		end
+		return "Anti Explosion OFF"
+	end,
+
+	["Anti Burn"] = function(state)
+		stopConn("burn")
+		if state then
+			conns.burn = RunService.Heartbeat:Connect(function()
+				local char = player.Character
+				if char then
+					for _, desc in ipairs(char:GetDescendants()) do
+						if desc:IsA("Fire") or desc:IsA("Smoke") then
+							desc.Enabled = false
+						end
+					end
+				end
+			end)
+			return "Anti Burn ON"
+		end
+		return "Anti Burn OFF"
+	end,
+
+	["Anti Paint"] = function(state)
+		stopConn("paint")
+		if state then
+			conns.paint = RunService.Heartbeat:Connect(function()
+				local char = player.Character
+				if char then
+					for _, desc in ipairs(char:GetDescendants()) do
+						if desc:IsA("Decal") or desc:IsA("Texture") then
+							desc.Transparency = 1
+						end
+					end
+				end
+			end)
+			return "Anti Paint ON"
+		end
+		return "Anti Paint OFF"
+	end,
+
+	["Anti Void"] = function(state)
+		stopConn("void")
+		if state then
+			conns.void = RunService.Heartbeat:Connect(function()
+				local c = player.Character
+				local root = c and c:FindFirstChild("HumanoidRootPart")
+				if root and root.Position.Y < -80 then
+					root.CFrame = savedCFrame or CFrame.new(0, 20, 0)
+					root.AssemblyLinearVelocity = Vector3.zero
+				end
+			end)
+			return "Anti Void ON"
+		end
+		return "Anti Void OFF"
+	end,
+
+	["Water Walk"] = function(state)
+		stopConn("waterwalk")
+		removeWaterPart()
+		if state then
+			local part = Instance.new("Part")
+			part.Name = "MhertWaterWalkPart"
+			part.Size = Vector3.new(28, 1, 28)
+			part.Anchored = true
+			part.CanCollide = true
+			part.Transparency = 1
+			part.Parent = Workspace
+			waterPart = part
+
+			conns.waterwalk = RunService.Heartbeat:Connect(function()
+				local c = player.Character
+				local root = c and c:FindFirstChild("HumanoidRootPart")
+				if root and waterPart then
+					waterPart.Position = Vector3.new(root.Position.X, root.Position.Y - 3.6, root.Position.Z)
+				end
+			end)
+			return "Water Walk ON"
+		end
+		return "Water Walk OFF"
+	end,
+
+	["Delete Legs"] = function(state)
+		local char = player.Character
+		if not char then return "No Character" end
+		for _, partName in ipairs({"Left Leg", "Right Leg", "LeftUpperLeg", "LeftLowerLeg", "LeftFoot", "RightUpperLeg", "RightLowerLeg", "RightFoot"}) do
+			local p = char:FindFirstChild(partName)
+			if p then
+				p.Transparency = state and 1 or 0
+				p.CanCollide = not state
+			end
+		end
+		return state and "Delete Legs ON" or "Delete Legs OFF"
+	end,
+
+	["Auto Reset"] = function(state)
+		if state then
+			local char = player.Character
+			local hum = char and char:FindFirstChildOfClass("Humanoid")
+			if hum then hum.Health = 0 end
+			return "Auto Reset triggered"
+		end
+		return "Auto Reset OFF"
+	end
+}
+
+local function addSection(col, text, order)
+	local lbl = Instance.new("TextLabel")
+	lbl.Size = UDim2.new(1, 0, 0, 16)
+	lbl.LayoutOrder = order
+	lbl.BackgroundTransparency = 1
+	lbl.Text = text
+	lbl.TextColor3 = THEME.Muted
+	lbl.Font = Enum.Font.GothamBold
+	lbl.TextSize = 10
+	lbl.Parent = col
+end
+
+local function addRow(col, name, order)
+	local row = Instance.new("Frame")
+	row.Size = UDim2.new(1, 0, 0, 26)
+	row.LayoutOrder = order
+	row.BackgroundColor3 = THEME.BgRow
+	row.Parent = col
+	Instance.new("UICorner", row).CornerRadius = UDim.new(0, 6)
+
+	local lbl = Instance.new("TextLabel")
+	lbl.Size = UDim2.new(1, -46, 1, 0)
+	lbl.Position = UDim2.new(0, 8, 0, 0)
+	lbl.BackgroundTransparency = 1
+	lbl.Text = name
+	lbl.TextXAlignment = Enum.TextXAlignment.Left
+	lbl.TextColor3 = THEME.Text
+	lbl.Font = Enum.Font.Gotham
+	lbl.TextSize = 11
+	lbl.Parent = row
+
+	local sw = Instance.new("TextButton")
+	sw.Size = UDim2.new(0, 30, 0, 15)
+	sw.Position = UDim2.new(1, -36, 0.5, -7.5)
+	sw.BackgroundColor3 = THEME.ToggleOff
+	sw.Text = ""
+	sw.Parent = row
+	Instance.new("UICorner", sw).CornerRadius = UDim.new(1, 0)
+
+	local dot = Instance.new("Frame")
+	dot.Size = UDim2.new(0, 11, 0, 11)
+	dot.Position = UDim2.new(0, 2, 0.5, -5.5)
+	dot.BackgroundColor3 = THEME.Knob
+	dot.Parent = sw
+	Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
+
+	local state = false
+	sw.MouseButton1Click:Connect(function()
+		state = not state
+		TweenService:Create(sw, TweenInfo.new(0.12), {
+			BackgroundColor3 = state and THEME.NeonGreen or THEME.ToggleOff
+		}):Play()
+		TweenService:Create(dot, TweenInfo.new(0.12), {
+			Position = state and UDim2.new(1, -13, 0.5, -5.5) or UDim2.new(0, 2, 0.5, -5.5)
+		}):Play()
+
+		if Actions[name] then
+			statusLbl.Text = Actions[name](state)
+		else
+			statusLbl.Text = name .. (state and " [ON - chua gan logic]" or " [OFF]")
+		end
+	end)
+end
+
+local TABS = {
+	{
+		label = "S",
+		left = {
+			{t = "sec", v = "Main"},
+			{t = "row", v = "Anti Ragdoll"},
+			{t = "row", v = "Anti Grab"},
+			{t = "row", v = "Lock Position"},
+			{t = "row", v = "Save Position"},
+			{t = "row", v = "Anti Explosion"},
+			{t = "row", v = "Anti Burn"},
+			{t = "row", v = "Anti Paint"},
+			{t = "row", v = "Anti Void"},
+			{t = "row", v = "Water Walk"},
+			{t = "row", v = "Delete Legs"},
+			{t = "sec", v = "Anti Blobman"},
+			{t = "row", v = "Anti Blobman"}
+		},
+		right = {
+			{t = "sec", v = "Anti Kick"},
+			{t = "row", v = "Anti Kick"},
+			{t = "row", v = "Auto Reset"},
+			{t = "row", v = "Break PCLD"},
+			{t = "sec", v = "Gucci"},
+			{t = "row", v = "Gucci"},
+			{t = "row", v = "Disable Gucci"},
+			{t = "sec", v = "Anti Lag"},
+			{t = "row", v = "Anti Lag"},
+			{t = "row", v = "Anti Sticky Lag"},
+			{t = "row", v = "Anti Input Lag"},
+			{t = "sec", v = "Counter Attack"},
+			{t = "row", v = "Counter Attack"}
+		}
+	},
+	{
+		label = "O",
+		left = {
+			{t = "sec", v = "Others Left"},
+			{t = "row", v = "Target Slot 1"},
+			{t = "row", v = "Target Slot 2"}
+		},
+		right = {
+			{t = "sec", v = "Others Right"},
+			{t = "row", v = "Extra Slot 1"},
+			{t = "row", v = "Extra Slot 2"}
+		}
+	}
+}
+
+local function clearCol(col)
+	for _, c in ipairs(col:GetChildren()) do
+		if c:IsA("GuiObject") then c:Destroy() end
+	end
+end
+
+local tabBtns = {}
+local function loadTab(idx)
+	local tab = TABS[idx]
+	if not tab then return end
+	clearCol(leftCol)
+	clearCol(rightCol)
+
+	for i, item in ipairs(tab.left) do
+		if item.t == "sec" then addSection(leftCol, item.v, i)
+		elseif item.t == "row" then addRow(leftCol, item.v, i) end
+	end
+	for i, item in ipairs(tab.right) do
+		if item.t == "sec" then addSection(rightCol, item.v, i)
+		elseif item.t == "row" then addRow(rightCol, item.v, i) end
+	end
+
+	for i, b in ipairs(tabBtns) do
+		local active = (i == idx)
+		b.BackgroundColor3 = active and Color3.fromRGB(38, 56, 22) or THEME.BgRow
+		b.TextColor3 = active and THEME.NeonGreen or THEME.Muted
+	end
+end
+
+for i, t in ipairs(TABS) do
+	local b = Instance.new("TextButton")
+	b.Size = UDim2.new(0, 28, 0, 28)
+	b.LayoutOrder = i
+	b.BackgroundColor3 = THEME.BgRow
+	b.Text = t.label
+	b.TextColor3 = THEME.Muted
+	b.Font = Enum.Font.GothamBold
+	b.TextSize = 12
+	b.Parent = sideBar
+	Instance.new("UICorner", b).CornerRadius = UDim.new(0, 6)
+	table.insert(tabBtns, b)
+	b.MouseButton1Click:Connect(function() loadTab(i) end)
+end
+
+local mini = false
+minBtn.MouseButton1Click:Connect(function()
+	mini = not mini
+	sideBar.Visible = not mini
+	content.Visible = not mini
+	mainFrame.Size = mini and UDim2.new(0, 580, 0, 42) or UDim2.new(0, 580, 0, 330)
+	minBtn.Text = mini and "+" or "-"
+end)
+
+closeBtn.MouseButton1Click:Connect(function() mainFrame.Visible = false end)
+floatBtn.MouseButton1Click:Connect(function() mainFrame.Visible = not mainFrame.Visible end)
+
+screenGui.Destroying:Connect(function()
+	for k in pairs(conns) do stopConn(k) end
+	removeWaterPart()
+end)
+
+loadTab(1)
