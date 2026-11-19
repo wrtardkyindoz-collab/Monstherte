@@ -1,0 +1,26 @@
+ -- MHERT MENU - GIAO DIEN CHINH SAT DANG ANH 2 (TON TOI + XANH NEON)
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+if playerGui:FindFirstChild("MhertCustomMenu") then
+	playerGui.MhertCustomMenu:Destroy()
+end
+
+local THEME = {
+	BgDark = Color3.fromRGB(16, 17, 20),
+	BgPanel = Color3.fromRGB(24, 26, 31),
+	BgRow = Color3.fromRGB(32, 35, 42),
+	BgSubTab = Color3.fromRGB(28, 30, 36),
+	NeonGreen = Color3.fromRGB(132, 240, 48),
+	NeonSoft = Color3.fromRGB(42, 68, 22),
+	Border = Color3.fromRGB(58, 63, 74),
+	Text = Color3.fromRGB(238, 242, 246),
+	Muted = Color3.fromRGB(145, 152, 166),
+	ToggleOff = Color3.fromRGB(58, 63, 74),
+	Knob = Color3.fromRGB(245, 248, 252
