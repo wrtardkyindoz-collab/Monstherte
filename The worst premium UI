@@ -1,0 +1,549 @@
+-- THE WORST STYLE UI CLONE (STANDALONE SCREEN GUI)
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+if playerGui:FindFirstChild("TheWorstStyleUI") then
+	playerGui.TheWorstStyleUI:Destroy()
+end
+
+local UI = {
+	WindowBg = Color3.fromRGB(20, 22, 26),
+	HeaderBg = Color3.fromRGB(28, 31, 37),
+	SubTabBg = Color3.fromRGB(24, 27, 32),
+	ColBg = Color3.fromRGB(23, 25, 30),
+	SectionBg = Color3.fromRGB(32, 35, 42),
+	RowBg = Color3.fromRGB(29, 32, 38),
+	RowHover = Color3.fromRGB(36, 40, 48),
+	Stroke = Color3.fromRGB(64, 69, 80),
+	Accent = Color3.fromRGB(145, 165, 220),
+	ActiveSoft = Color3.fromRGB(48, 55, 72),
+	Text = Color3.fromRGB(232, 236, 242),
+	SubText = Color3.fromRGB(140, 148, 162),
+	SwitchOff = Color3.fromRGB(56, 61, 72),
+	SwitchOn = Color3.fromRGB(120, 145, 210),
+	Knob = Color3.fromRGB(245, 247, 250),
+	BadgeBg = Color3.fromRGB(42, 46, 55)
+}
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "TheWorstStyleUI"
+screenGui.ResetOnSpawn = false
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+local okParent = pcall(function()
+	if typeof(gethui) == "function" then
+		screenGui.Parent = gethui()
+	else
+		screenGui.Parent = playerGui
+	end
+end)
+if not okParent or not screenGui.Parent then
+	screenGui.Parent = playerGui
+end
+
+-- Nut mo/an nhanh ben trai
+local quickBtn = Instance.new("TextButton")
+quickBtn.Name = "QuickToggle"
+quickBtn.Size = UDim2.new(0, 34, 0, 34)
+quickBtn.Position = UDim2.new(0, 10, 0, 92)
+quickBtn.BackgroundColor3 = UI.HeaderBg
+quickBtn.Text = "UI"
+quickBtn.TextColor3 = UI.Text
+quickBtn.Font = Enum.Font.GothamBold
+quickBtn.TextSize = 12
+quickBtn.Parent = screenGui
+Instance.new("UICorner", quickBtn).CornerRadius = UDim.new(0, 7)
+local qStroke = Instance.new("UIStroke", quickBtn)
+qStroke.Color = UI.Stroke
+qStroke.Thickness = 1
+
+-- Cua so chinh
+local window = Instance.new("Frame")
+window.Name = "Window"
+window.Size = UDim2.new(0, 620, 0, 332)
+window.Position = UDim2.new(0.5, -310, 0.5, -166)
+window.BackgroundColor3 = UI.WindowBg
+window.BackgroundTransparency = 0.06
+window.BorderSizePixel = 0
+window.Active = true
+window.Parent = screenGui
+Instance.new("UICorner", window).CornerRadius = UDim.new(0, 8)
+local winStroke = Instance.new("UIStroke", window)
+winStroke.Color = UI.Stroke
+winStroke.Thickness = 1.2
+
+-- Thanh tieu de tren cung
+local header = Instance.new("Frame")
+header.Name = "Header"
+header.Size = UDim2.new(1, 0, 0, 42)
+header.BackgroundColor3 = UI.HeaderBg
+header.BackgroundTransparency = 0.12
+header.BorderSizePixel = 0
+header.Parent = window
+Instance.new("UICorner", header).CornerRadius = UDim.new(0, 8)
+
+local headerFix = Instance.new("Frame")
+headerFix.Size = UDim2.new(1, 0, 0, 8)
+headerFix.Position = UDim2.new(0, 0, 1, -8)
+headerFix.BackgroundColor3 = UI.HeaderBg
+headerFix.BackgroundTransparency = 0.12
+headerFix.BorderSizePixel = 0
+headerFix.Parent = header
+
+local iconBadge = Instance.new("Frame")
+iconBadge.Size = UDim2.new(0, 28, 0, 28)
+iconBadge.Position = UDim2.new(0, 10, 0.5, -14)
+iconBadge.BackgroundColor3 = UI.BadgeBg
+iconBadge.BorderSizePixel = 0
+iconBadge.Parent = header
+Instance.new("UICorner", iconBadge).CornerRadius = UDim.new(0, 6)
+local ibStroke = Instance.new("UIStroke", iconBadge)
+ibStroke.Color = UI.Stroke
+ibStroke.Thickness = 1
+
+local headerIconLbl = Instance.new("TextLabel")
+headerIconLbl.Size = UDim2.new(1, 0, 1, 0)
+headerIconLbl.BackgroundTransparency = 1
+headerIconLbl.Text = "🛡️"
+headerIconLbl.TextColor3 = UI.Text
+headerIconLbl.Font = Enum.Font.GothamBold
+headerIconLbl.TextSize = 14
+headerIconLbl.Parent = iconBadge
+
+local winTitle = Instance.new("TextLabel")
+winTitle.Size = UDim2.new(0, 320, 0, 17)
+winTitle.Position = UDim2.new(0, 46, 0, 5)
+winTitle.BackgroundTransparency = 1
+winTitle.Text = "Invincibility"
+winTitle.TextXAlignment = Enum.TextXAlignment.Left
+winTitle.TextColor3 = UI.Text
+winTitle.Font = Enum.Font.GothamBold
+winTitle.TextSize = 13
+winTitle.Parent = header
+
+local winDesc = Instance.new("TextLabel")
+winDesc.Size = UDim2.new(0, 420, 0, 14)
+winDesc.Position = UDim2.new(0, 46, 0, 22)
+winDesc.BackgroundTransparency = 1
+winDesc.Text = "Counter Attacks & Protect Your Friends"
+winDesc.TextXAlignment = Enum.TextXAlignment.Left
+winDesc.TextColor3 = UI.SubText
+winDesc.Font = Enum.Font.Gotham
+winDesc.TextSize = 10
+winDesc.Parent = header
+
+-- Cum nut ben phai header (None | - | X)
+local bindHint = Instance.new("TextLabel")
+bindHint.Size = UDim2.new(0, 38, 0, 20)
+bindHint.Position = UDim2.new(1, -96, 0.5, -10)
+bindHint.BackgroundTransparency = 1
+bindHint.Text = "None"
+bindHint.TextColor3 = UI.SubText
+bindHint.Font = Enum.Font.Gotham
+bindHint.TextSize = 10
+bindHint.Parent = header
+
+local minBtn = Instance.new("TextButton")
+minBtn.Size = UDim2.new(0, 22, 0, 22)
+minBtn.Position = UDim2.new(1, -54, 0.5, -11)
+minBtn.BackgroundColor3 = UI.RowBg
+minBtn.Text = "-"
+minBtn.TextColor3 = UI.Text
+minBtn.Font = Enum.Font.GothamBold
+minBtn.TextSize = 13
+minBtn.Parent = header
+Instance.new("UICorner", minBtn).CornerRadius = UDim.new(0, 5)
+
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(0, 22, 0, 22)
+closeBtn.Position = UDim2.new(1, -28, 0.5, -11)
+closeBtn.BackgroundColor3 = UI.RowBg
+closeBtn.Text = "X"
+closeBtn.TextColor3 = UI.Text
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.TextSize = 11
+closeBtn.Parent = header
+Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 5)
+
+-- Keo tha cua so
+do
+	local dragging, dragInput, dragStart, startPos
+	header.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			dragging = true
+			dragStart = input.Position
+			startPos = window.Position
+			input.Changed:Connect(function()
+				if input.UserInputState == Enum.UserInputState.End then dragging = false end
+			end)
+		end
+	end)
+	header.InputChanged:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+			dragInput = input
+		end
+	end)
+	UserInputService.InputChanged:Connect(function(input)
+		if input == dragInput and dragging then
+			local delta = input.Position - dragStart
+			window.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+		end
+	end)
+end
+
+-- Cot icon doc ben trai (keo dai xuong sat day)
+local leftRail = Instance.new("Frame")
+leftRail.Name = "LeftRail"
+leftRail.Size = UDim2.new(0, 38, 1, -42)
+leftRail.Position = UDim2.new(0, 0, 0, 42)
+leftRail.BackgroundColor3 = UI.HeaderBg
+leftRail.BackgroundTransparency = 0.15
+leftRail.BorderSizePixel = 0
+leftRail.Parent = window
+
+local railLayout = Instance.new("UIListLayout")
+railLayout.Padding = UDim.new(0, 4)
+railLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+railLayout.SortOrder = Enum.SortOrder.LayoutOrder
+railLayout.Parent = leftRail
+
+local railPad = Instance.new("UIPadding")
+railPad.PaddingTop = UDim.new(0, 6)
+railPad.PaddingBottom = UDim.new(0, 6)
+railPad.Parent = leftRail
+
+-- Vung noi dung ben phai
+local body = Instance.new("Frame")
+body.Name = "Body"
+body.Size = UDim2.new(1, -46, 1, -48)
+body.Position = UDim2.new(0, 42, 0, 45)
+body.BackgroundTransparency = 1
+body.Parent = window
+
+-- Thanh Self / Others o tren cung
+local modeBar = Instance.new("Frame")
+modeBar.Size = UDim2.new(1, 0, 0, 22)
+modeBar.BackgroundColor3 = UI.SubTabBg
+modeBar.BackgroundTransparency = 0.2
+modeBar.BorderSizePixel = 0
+modeBar.Parent = body
+Instance.new("UICorner", modeBar).CornerRadius = UDim.new(0, 5)
+
+local selfBtn = Instance.new("TextButton")
+selfBtn.Size = UDim2.new(0.5, 0, 1, 0)
+selfBtn.Position = UDim2.new(0, 0, 0, 0)
+selfBtn.BackgroundTransparency = 1
+selfBtn.Text = "Self"
+selfBtn.TextColor3 = UI.Text
+selfBtn.Font = Enum.Font.GothamBold
+selfBtn.TextSize = 11
+selfBtn.Parent = modeBar
+
+local othersBtn = Instance.new("TextButton")
+othersBtn.Size = UDim2.new(0.5, 0, 1, 0)
+othersBtn.Position = UDim2.new(0.5, 0, 0, 0)
+othersBtn.BackgroundTransparency = 1
+othersBtn.Text = "Others"
+othersBtn.TextColor3 = UI.SubText
+othersBtn.Font = Enum.Font.GothamBold
+othersBtn.TextSize = 11
+othersBtn.Parent = modeBar
+
+local modeUnderline = Instance.new("Frame")
+modeUnderline.Size = UDim2.new(0.5, -16, 0, 2)
+modeUnderline.Position = UDim2.new(0, 8, 1, -2)
+modeUnderline.BackgroundColor3 = UI.Accent
+modeUnderline.BorderSizePixel = 0
+modeUnderline.Parent = modeBar
+
+-- Khung 2 cot cuon
+local columnsArea = Instance.new("Frame")
+columnsArea.Size = UDim2.new(1, 0, 1, -26)
+columnsArea.Position = UDim2.new(0, 0, 0, 26)
+columnsArea.BackgroundTransparency = 1
+columnsArea.Parent = body
+
+local leftScroll = Instance.new("ScrollingFrame")
+leftScroll.Size = UDim2.new(0.5, -4, 1, 0)
+leftScroll.Position = UDim2.new(0, 0, 0, 0)
+leftScroll.BackgroundColor3 = UI.ColBg
+leftScroll.BackgroundTransparency = 0.22
+leftScroll.BorderSizePixel = 0
+leftScroll.ScrollBarThickness = 2
+leftScroll.ScrollBarImageColor3 = UI.SubText
+leftScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+leftScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+leftScroll.Parent = columnsArea
+Instance.new("UICorner", leftScroll).CornerRadius = UDim.new(0, 6)
+
+local rightScroll = Instance.new("ScrollingFrame")
+rightScroll.Size = UDim2.new(0.5, -4, 1, 0)
+rightScroll.Position = UDim2.new(0.5, 4, 0, 0)
+rightScroll.BackgroundColor3 = UI.ColBg
+rightScroll.BackgroundTransparency = 0.22
+rightScroll.BorderSizePixel = 0
+rightScroll.ScrollBarThickness = 2
+rightScroll.ScrollBarImageColor3 = UI.SubText
+rightScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+rightScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+rightScroll.Parent = columnsArea
+Instance.new("UICorner", rightScroll).CornerRadius = UDim.new(0, 6)
+
+for _, sc in ipairs({leftScroll, rightScroll}) do
+	local list = Instance.new("UIListLayout")
+	list.Padding = UDim.new(0, 3)
+	list.SortOrder = Enum.SortOrder.LayoutOrder
+	list.Parent = sc
+
+	local pad = Instance.new("UIPadding")
+	pad.PaddingTop = UDim.new(0, 5)
+	pad.PaddingBottom = UDim.new(0, 6)
+	pad.PaddingLeft = UDim.new(0, 6)
+	pad.PaddingRight = UDim.new(0, 6)
+	pad.Parent = sc
+end
+
+local function createSectionHeader(parent, title, order)
+	local bar = Instance.new("Frame")
+	bar.Size = UDim2.new(1, 0, 0, 17)
+	bar.LayoutOrder = order
+	bar.BackgroundColor3 = UI.SectionBg
+	bar.BackgroundTransparency = 0.35
+	bar.BorderSizePixel = 0
+	bar.Parent = parent
+	Instance.new("UICorner", bar).CornerRadius = UDim.new(0, 4)
+
+	local lbl = Instance.new("TextLabel")
+	lbl.Size = UDim2.new(1, 0, 1, 0)
+	lbl.BackgroundTransparency = 1
+	lbl.Text = title
+	lbl.TextColor3 = UI.SubText
+	lbl.Font = Enum.Font.GothamMedium
+	lbl.TextSize = 10
+	lbl.Parent = bar
+end
+
+local function createToggleItem(parent, cfg, order)
+	local row = Instance.new("Frame")
+	row.Size = UDim2.new(1, 0, 0, 24)
+	row.LayoutOrder = order
+	row.BackgroundColor3 = UI.RowBg
+	row.BackgroundTransparency = 0.3
+	row.BorderSizePixel = 0
+	row.Parent = parent
+	Instance.new("UICorner", row).CornerRadius = UDim.new(0, 4)
+
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.new(1, -110, 1, 0)
+	label.Position = UDim2.new(0, 8, 0, 0)
+	label.BackgroundTransparency = 1
+	label.Text = cfg.name
+	label.TextXAlignment = Enum.TextXAlignment.Left
+	label.TextColor3 = UI.Text
+	label.Font = Enum.Font.Gotham
+	label.TextSize = 11
+	label.Parent = row
+
+	local rightOffset = 34
+	if cfg.tag then
+		local badge = Instance.new("TextLabel")
+		badge.Size = UDim2.new(0, 46, 0, 14)
+		badge.Position = UDim2.new(1, -86, 0.5, -7)
+		badge.BackgroundColor3 = UI.BadgeBg
+		badge.Text = cfg.tag
+		badge.TextColor3 = UI.SubText
+		badge.Font = Enum.Font.Gotham
+		badge.TextSize = 9
+		badge.Parent = row
+		Instance.new("UICorner", badge).CornerRadius = UDim.new(0, 3)
+		rightOffset = 34
+	end
+
+	if cfg.arrow then
+		local arrow = Instance.new("TextLabel")
+		arrow.Size = UDim2.new(0, 12, 0, 14)
+		arrow.Position = UDim2.new(1, cfg.tag and -100 or -48, 0.5, -7)
+		arrow.BackgroundTransparency = 1
+		arrow.Text = "^"
+		arrow.TextColor3 = UI.SubText
+		arrow.Font = Enum.Font.GothamBold
+		arrow.TextSize = 10
+		arrow.Parent = row
+	end
+
+	local switch = Instance.new("TextButton")
+	switch.Size = UDim2.new(0, 26, 0, 12)
+	switch.Position = UDim2.new(1, -32, 0.5, -6)
+	switch.BackgroundColor3 = UI.SwitchOff
+	switch.Text = ""
+	switch.Parent = row
+	Instance.new("UICorner", switch).CornerRadius = UDim.new(1, 0)
+
+	local knob = Instance.new("Frame")
+	knob.Size = UDim2.new(0, 8, 0, 8)
+	knob.Position = UDim2.new(0, 2, 0.5, -4)
+	knob.BackgroundColor3 = UI.Knob
+	knob.Parent = switch
+	Instance.new("UICorner", knob).CornerRadius = UDim.new(1, 0)
+
+	local active = false
+	switch.MouseButton1Click:Connect(function()
+		active = not active
+		TweenService:Create(switch, TweenInfo.new(0.12), {
+			BackgroundColor3 = active and UI.SwitchOn or UI.SwitchOff
+		}):Play()
+		TweenService:Create(knob, TweenInfo.new(0.12), {
+			Position = active and UDim2.new(1, -10, 0.5, -4) or UDim2.new(0, 2, 0.5, -4)
+		}):Play()
+		winDesc.Text = cfg.name .. (active and " : ON" or " : OFF")
+	end)
+end
+
+local RAIL_ICONS = {"✋", "🛡️", "⏸️", "👤", "◎", "👁️", "⊞", "🍌", "⚙️"}
+
+local PAGES = {
+	Self = {
+		left = {
+			{kind = "sec", title = "Main"},
+			{kind = "tog", name = "Anti Ragdoll"},
+			{kind = "tog", name = "Anti Grab", arrow = true},
+			{kind = "tog", name = "Lock Position", tag = "None"},
+			{kind = "tog", name = "Save Position"},
+			{kind = "tog", name = "Anti Explosion"},
+			{kind = "tog", name = "Anti Burn"},
+			{kind = "tog", name = "Anti Paint"},
+			{kind = "tog", name = "Anti Void"},
+			{kind = "tog", name = "Water Walk"},
+			{kind = "tog", name = "Delete Legs", tag = "None"},
+			{kind = "sec", title = "Anti Blobman"},
+			{kind = "tog", name = "Anti Blobman"}
+		},
+		right = {
+			{kind = "sec", title = "Anti Kick"},
+			{kind = "tog", name = "Anti Kick", arrow = true},
+			{kind = "tog", name = "Auto Reset"},
+			{kind = "tog", name = "Break PCLD"},
+			{kind = "sec", title = "Gucci"},
+			{kind = "tog", name = "Gucci", arrow = true, tag = "KeypadPlus"},
+			{kind = "tog", name = "Disable Gucci", tag = "PageDown"},
+			{kind = "sec", title = "Anti Lag"},
+			{kind = "tog", name = "Anti Lag", arrow = true},
+			{kind = "tog", name = "Anti Sticky Lag"},
+			{kind = "tog", name = "Anti Input Lag", arrow = true},
+			{kind = "sec", title = "Counter Attack"},
+			{kind = "tog", name = "Counter Attack", arrow = true}
+		}
+	},
+	Others = {
+		left = {
+			{kind = "sec", title = "Target Controls"},
+			{kind = "tog", name = "Spectate"},
+			{kind = "tog", name = "Teleport To"}
+		},
+		right = {
+			{kind = "sec", title = "Interactions"},
+			{kind = "tog", name = "Bring"},
+			{kind = "tog", name = "Fling"}
+		}
+	}
+}
+
+local function clearChildren(frame)
+	for _, child in ipairs(frame:GetChildren()) do
+		if child:IsA("GuiObject") then
+			child:Destroy()
+		end
+	end
+end
+
+local currentTab = "Self"
+local selectedRail = 1
+local railButtons = {}
+
+local function renderPage()
+	local data = PAGES[currentTab] or PAGES.Self
+	clearChildren(leftScroll)
+	clearChildren(rightScroll)
+
+	for i, item in ipairs(data.left) do
+		if item.kind == "sec" then
+			createSectionHeader(leftScroll, item.title, i)
+		elseif item.kind == "tog" then
+			createToggleItem(leftScroll, item, i)
+		end
+	end
+
+	for i, item in ipairs(data.right) do
+		if item.kind == "sec" then
+			createSectionHeader(rightScroll, item.title, i)
+		elseif item.kind == "tog" then
+			createToggleItem(rightScroll, item, i)
+		end
+	end
+
+	local isSelf = (currentTab == "Self")
+	selfBtn.TextColor3 = isSelf and UI.Text or UI.SubText
+	othersBtn.TextColor3 = (not isSelf) and UI.Text or UI.SubText
+	TweenService:Create(modeUnderline, TweenInfo.new(0.14), {
+		Position = isSelf and UDim2.new(0, 8, 1, -2) or UDim2.new(0.5, 8, 1, -2)
+	}):Play()
+end
+
+for idx, ico in ipairs(RAIL_ICONS) do
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(0, 26, 0, 26)
+	btn.LayoutOrder = idx
+	btn.BackgroundColor3 = (idx == 1) and UI.ActiveSoft or UI.RowBg
+	btn.BackgroundTransparency = 0.25
+	btn.Text = ico
+	btn.TextColor3 = (idx == 1) and UI.Text or UI.SubText
+	btn.Font = Enum.Font.GothamBold
+	btn.TextSize = 12
+	btn.Parent = leftRail
+	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 5)
+	table.insert(railButtons, btn)
+
+	btn.MouseButton1Click:Connect(function()
+		selectedRail = idx
+		for i, b in ipairs(railButtons) do
+			local sel = (i == selectedRail)
+			b.BackgroundColor3 = sel and UI.ActiveSoft or UI.RowBg
+			b.TextColor3 = sel and UI.Text or UI.SubText
+		end
+		headerIconLbl.Text = ico
+		winTitle.Text = "Category #" .. tostring(idx)
+	end)
+end
+
+selfBtn.MouseButton1Click:Connect(function()
+	currentTab = "Self"
+	renderPage()
+end)
+
+othersBtn.MouseButton1Click:Connect(function()
+	currentTab = "Others"
+	renderPage()
+end)
+
+local minimized = false
+minBtn.MouseButton1Click:Connect(function()
+	minimized = not minimized
+	leftRail.Visible = not minimized
+	body.Visible = not minimized
+	window.Size = minimized and UDim2.new(0, 620, 0, 42) or UDim2.new(0, 620, 0, 332)
+	minBtn.Text = minimized and "+" or "-"
+end)
+
+closeBtn.MouseButton1Click:Connect(function()
+	window.Visible = false
+end)
+
+quickBtn.MouseButton1Click:Connect(function()
+	window.Visible = not window.Visible
+end)
+
+renderPage()
