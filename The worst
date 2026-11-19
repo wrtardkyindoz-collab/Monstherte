@@ -1,0 +1,93 @@
+-- X HUB V3 Key System
+local RAW = "https://xhubv3.lovable.app/raw/XHUBVIPNdAV9QWn/script"
+local GETKEY = "https://xhubv3.lovable.app/getkey/XHUBVIPNdAV9QWn"
+local send = request or http_request or (syn and syn.request)
+assert(send, "X HUB V3: HTTP headers unavailable")
+
+local function tryKey(key)
+  if type(key) ~= "string" or #key < 32 then return nil end
+  local ok, res = pcall(send, {Url = RAW, Method = "GET", Headers = {Authorization = "Bearer " .. key}})
+  if ok and res and res.StatusCode == 200 then return res.Body end
+  return nil
+end
+
+local function run(body)
+  local fn, err = loadstring(body)
+  assert(fn, err)
+  fn()
+end
+
+local saved = getgenv()["X HUB V3 KEY"]
+local body = tryKey(saved)
+if body then return run(body) end
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "XHUBV3Key"
+gui.ResetOnSpawn = false
+pcall(function() gui.Parent = (gethui and gethui()) or game:GetService("CoreGui") end)
+if not gui.Parent then gui.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui") end
+
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 320, 0, 170)
+frame.Position = UDim2.new(0.5, -160, 0.5, -85)
+frame.BackgroundColor3 = Color3.fromRGB(20, 20, 28)
+frame.Active = true
+frame.Draggable = true
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
+
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, 0, 0, 34)
+title.BackgroundTransparency = 1
+title.Text = "X HUB V3 - Key System"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 16
+
+local box = Instance.new("TextBox", frame)
+box.Size = UDim2.new(1, -24, 0, 34)
+box.Position = UDim2.new(0, 12, 0, 42)
+box.PlaceholderText = "Nhap key..."
+box.Text = ""
+box.ClearTextOnFocus = false
+box.BackgroundColor3 = Color3.fromRGB(35, 35, 48)
+box.TextColor3 = Color3.fromRGB(255, 255, 255)
+box.Font = Enum.Font.Gotham
+box.TextSize = 13
+Instance.new("UICorner", box)
+
+local status = Instance.new("TextLabel", frame)
+status.Size = UDim2.new(1, -24, 0, 20)
+status.Position = UDim2.new(0, 12, 0, 80)
+status.BackgroundTransparency = 1
+status.Text = ""
+status.TextColor3 = Color3.fromRGB(255, 200, 80)
+status.Font = Enum.Font.Gotham
+status.TextSize = 12
+
+local function button(text, x)
+  local b = Instance.new("TextButton", frame)
+  b.Size = UDim2.new(0.5, -18, 0, 36)
+  b.Position = UDim2.new(x, x == 0 and 12 or 6, 0, 116)
+  b.Text = text
+  b.BackgroundColor3 = Color3.fromRGB(0, 170, 120)
+  b.TextColor3 = Color3.fromRGB(255, 255, 255)
+  b.Font = Enum.Font.GothamBold
+  b.TextSize = 14
+  Instance.new("UICorner", b)
+  return b
+end
+
+button("Get Key", 0).MouseButton1Click:Connect(function()
+  if setclipboard then setclipboard(GETKEY) status.Text = "Da copy link Get Key, mo trinh duyet de lay key"
+  else status.Text = GETKEY end
+end)
+
+button("Check Key", 0.5).MouseButton1Click:Connect(function()
+  local key = box.Text:gsub("%s", "")
+  status.Text = "Dang kiem tra..."
+  local code = tryKey(key)
+  if not code then status.Text = "Key sai, het han hoac bi thu hoi" return end
+  getgenv()["X HUB V3 KEY"] = key
+  gui:Destroy()
+  run(code)
+end)
