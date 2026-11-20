@@ -1,0 +1,70 @@
+local CACHE_FILE = "wrst_cache.json"
+local HttpService = game:GetService("HttpService")
+
+local cache = {}
+if isfile and isfile(CACHE_FILE) then
+    local ok, data = pcall(function()
+        return HttpService:JSONDecode(readfile(CACHE_FILE))
+    end)
+    if ok and type(data) == "table" then cache = data end
+end
+
+local function saveCache()
+    if writefile then
+        writefile(CACHE_FILE, HttpService:JSONEncode(cache))
+    end
+end
+
+local function isJnkie(url)
+    return type(url) == "string" and url:find("jnkie", 1, true) ~= nil
+end
+
+local function isValidationUrl(url)
+    local l = url:lower()
+    return isJnkie(url) and (l:find("check") or l:find("verify") or l:find("key") or l:find("auth"))
+end
+
+local function isDownloadUrl(url)
+    return isJnkie(url) and url:lower():find("download") ~= nil
+end
+
+local oldHttpGet
+oldHttpGet = hookfunction(game.HttpGet, newcclosure(function(self, url, ...)
+    if isValidationUrl(url) then
+        local key = _G.script_key or script_key
+        if key and cache[url] and cache[url].key == key and cache[url].body then
+            print("[WRST] replay validation:", url)
+            return cache[url].body
+        end
+        local body = oldHttpGet(self, url, ...)
+        if key then
+            cache[url] = { key = key, body = body }
+            saveCache()
+            print("[WRST] cached validation:", url)
+        end
+        return body
+    end
+
+    local body = oldHttpGet(self, url, ...)
+    if isDownloadUrl(url) then
+        cache.payload = body
+        saveCache()
+        if writefile then
+            writefile("wrst_payload_" .. os.time() .. ".lua", body)
+        end
+        print("[WRST] captured payload:", #body, "bytes")
+    end
+    return body
+end))
+
+if cache.payload then
+    print("[WRST] running cached payload without key")
+    local fn, err = loadstring(cache.payload)
+    if fn then
+        fn()
+    else
+        warn("[WRST] payload load failed:", err)
+    end
+else
+    print("[WRST] no cache yet. Chạy một lần với script_key hợp lệ để capture.")
+end
